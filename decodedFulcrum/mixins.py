@@ -41,6 +41,9 @@ class Updateable(object):
 
         api_resp = self.call('put', '{0}/{1}'.format(self.path, id), data=obj, extra_headers={'Content-Type': 'application/json'})
 
+        # now decode the api response
+        decode(api_resp, self.fieldNameLookups)
+
         return api_resp
 
 
