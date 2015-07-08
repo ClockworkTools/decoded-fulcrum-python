@@ -33,21 +33,24 @@ def getApplicationFieldNames(jsonElements):
     return applicationFieldNames
 
 
-def decode(json, fieldNameLookups):
+def decode(json, schemas):
     if 'records' in json:
         for record in json['records']:
             form_id = record['form_id']
-            _decode(record['form_values'], form_id, fieldNameLookups)
+            schema = schemas[form_id]
+            _decode(record['form_values'], schema)
     elif 'record' in json:
         form_id = json['record']['form_id']
-        _decode(json['record']['form_values'], form_id, fieldNameLookups)
+        schema = schemas[form_id]
+        _decode(json['record']['form_values'], schema)
     elif 'form_values' in json:
         form_id = json['form_id']
-        _decode(json['form_values'], form_id, fieldNameLookups)
+        schema = schemas[form_id]
+        _decode(json['form_values'], schema)
     else:
         raise Exception('its not working')
 
-def _decode(jsonFormValuesField, form_id, fieldNameLookups):
+def _decode(jsonFormValuesField, schema):
     # jsonFormValuesField, is a dictionary item of a fulcrum record or child record with the key 'form_values'
 
     # Note that a jsonFormValuesField is not the same as a jsonFieldValue, but is either:
@@ -62,8 +65,7 @@ def _decode(jsonFormValuesField, form_id, fieldNameLookups):
     # be safe to delete or modify items in the dictionary while iterating over it
     for fieldCode, fieldValue in jsonFormValuesField.items():
         # add a copy of the field with the fieldName instead of the fieldCode
-        lookupKey = (form_id, fieldCode)
-        fieldName = fieldNameLookups[lookupKey]
+        fieldName = schema.getFieldNameByKey(fieldCode)
         jsonFormValuesField[fieldName]=fieldValue
 
         # delete the original field
@@ -73,16 +75,17 @@ def _decode(jsonFormValuesField, form_id, fieldNameLookups):
         if isinstance(fieldValue, list):
             # fieldValue is a list of child records
             for childRecord in fieldValue:
-                _decode(childRecord['form_values'], form_id, fieldNameLookups)
+                _decode(childRecord['form_values'], schema)
 
-def recode(fulcrumJsonRecord, fieldKeyLookups):
+def recode(fulcrumJsonRecord, schemas):
     if 'form_values' not in fulcrumJsonRecord:
         raise Exception('its gone wrong on recode')
 
     form_id = fulcrumJsonRecord['form_id']
-    _recode(fulcrumJsonRecord['form_values'], form_id, fieldKeyLookups)
+    schema = schemas[form_id]
+    _recode(fulcrumJsonRecord['form_values'], schema)
 
-def _recode(jsonFormValuesField, form_id, fieldKeyLookups):
+def _recode(jsonFormValuesField, schema):
     # jsonFormValuesField, is a dictionary item of a fulcrum record or child record with the key 'form_values'
 
     # Note that a jsonFormValuesField is not the same as a jsonFieldValue, bu tis either:
@@ -92,8 +95,7 @@ def _recode(jsonFormValuesField, form_id, fieldKeyLookups):
     # Build up the form fields with the field names replaced by the field codes
     for fieldName, fieldValue in jsonFormValuesField.items():
         # add a copy of the field with the fieldName instead of the fieldCode
-        lookupKey = (form_id, fieldName)
-        key = fieldKeyLookups[lookupKey]
+        key = schema.getFieldKeyByName(fieldName)
         jsonFormValuesField[key]=fieldValue
 
         # delete the original field
@@ -104,6 +106,6 @@ def _recode(jsonFormValuesField, form_id, fieldKeyLookups):
 
             # fieldValue is a list of child records
             for childRecord in fieldValue:
-                _recode(childRecord['form_values'], form_id, fieldKeyLookups)
+                _recode(childRecord['form_values'], schema)
 
     return jsonFormValuesField

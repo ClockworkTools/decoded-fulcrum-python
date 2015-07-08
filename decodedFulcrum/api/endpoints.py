@@ -9,14 +9,13 @@ class DecodedRecords(Records):
         super(DecodedRecords, self).__init__(api_config)
 
         self.dictionaryOfSchemas = dictionaryOfSchemas
-        self.fieldNameLookups = fieldNameLookups
-        self.fieldKeyLookups = fieldKeyLookups
 
     def find(self, id):
         api_resp = super(DecodedRecords, self).find(id)
 
         # decode the api response
-        decode(api_resp, self.fieldNameLookups)
+        # decode(api_resp, self.fieldNameLookups)
+        decode(api_resp, self.dictionaryOfSchemas)
 
         return api_resp
 
@@ -24,27 +23,30 @@ class DecodedRecords(Records):
         api_resp = super(DecodedRecords, self).search(url_params)
 
         # decode the api response
-        decode(api_resp, self.fieldNameLookups)
+        decode(api_resp, self.dictionaryOfSchemas)
 
         return api_resp
 
     def create(self, obj):
         # reapply the keys to the json object that has been passed back before it written to Fulcrum
-        recode(obj, self.fieldKeyLookups)
+        recode(obj, self.dictionaryOfSchemas)
 
         api_resp = super(DecodedRecords, self).create(obj)
         api_resp = self.call('post', self.path, data=obj, extra_headers={'Content-Type': 'application/json'})
+
+        # now decode the api response
+        decode(api_resp, self.dictionaryOfSchemas)
 
         return api_resp
 
     def update(self, id, obj):
         # reapply the keys to the json object that has been passed back before it is written back to Fulcrum
-        recode(obj, self.fieldKeyLookups)
+        recode(obj, self.dictionaryOfSchemas)
 
         api_resp = super(DecodedRecords, self).update(id, obj)
 
         # now decode the api response
-        decode(api_resp, self.fieldNameLookups)
+        decode(api_resp, self.dictionaryOfSchemas)
 
         return api_resp
 

@@ -23,4 +23,12 @@ SYSTEM_LEVEL_FIELD_NAMES =  ['altitude'
                             ,'vertical_accuracy'
                             ]
 
+CHILD_LEVEL_FIELD_NAMES =  ['created_at'
+                            ,'created_by_id'
+                            ,'geometry'
+                            ,'id'
+                            ,'updated_at'
+                            ,'updated_by_id'
+                            ,'version'
+                            ]
 

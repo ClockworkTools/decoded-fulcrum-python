@@ -4,11 +4,16 @@ __author__ = 'Keith Hannon'
 __datecreated__ = '8/07/2015'
 
 
-from decodedFulcrum.fieldnames import SYSTEM_LEVEL_FIELD_NAMES
+from decodedFulcrum.fieldnames import SYSTEM_LEVEL_FIELD_NAMES, CHILD_LEVEL_FIELD_NAMES
 
 class Schema():
     def __init__(self, jsonForm):
         self._jsonForm = jsonForm
+
+        #the following dictionaries are populated on demand
+        self._applicationFieldsKeyedByFieldName = None
+        self._applicationFieldsKeyedByKey = None
+
 
     def getFormId(self):
         return self._jsonForm['id']
@@ -23,28 +28,38 @@ class Schema():
         else:
             return description
 
-    def _getJsonElement(self, fieldName):
+    def _getJsonElementByFieldName(self, fieldName):
         applicationFields = self._getAllApplicationFields()
         if fieldName in applicationFields:
             return applicationFields[fieldName]
 
+    def _getJsonElementByFieldKey(self, key):
+        if self._applicationFieldsKeyedByKey == None:
+            self._applicationFieldsKeyedByKey = {}
+            applicationFieldsKeyedByName = self._getAllApplicationFields()
+            for fieldName, jsonElement in applicationFieldsKeyedByName.items():
+                key = jsonElement['key']
+                if key is None:
+                    pass
+                self._applicationFieldsKeyedByKey[key] = jsonElement
+
+        return self._applicationFieldsKeyedByKey[key]
+
     def getFieldKeyByName(self, fieldName):
-        jsonApplicationField = self._getJsonElement(fieldName)
+        jsonApplicationField = self._getJsonElementByFieldName(fieldName)
         if jsonApplicationField:
             return jsonApplicationField['key']
 
     def getFieldNameByKey(self, fieldKey):
-        formFields = self._getAllApplicationFields()
-
-        for fieldName, jsonApplicationField in formFields.items():
-            if jsonApplicationField["key"] == fieldKey:
-                return fieldName
+        jsonElement = self._getJsonElementByFieldKey(fieldKey)
+        if jsonElement:
+            return jsonElement['data_name']
 
     def getFieldType(self, fieldName):
         if fieldName in SYSTEM_LEVEL_FIELD_NAMES:
             return 'System'
         else:
-            jsonApplicationField = self._getJsonElement(fieldName)
+            jsonApplicationField = self._getJsonElementByFieldName(fieldName)
 
             if jsonApplicationField:
                 return jsonApplicationField['type']
@@ -60,7 +75,11 @@ class Schema():
         # This returns all the KeyedFields in the form
         # A Repeatable is a KeyedField, as well as all the fields defined within it
         # Both a Section and the fields defined within the Section are classed as KeyedFields
-        return self._new_getApplicationFields(True, True, True, True)
+        if self._applicationFieldsKeyedByFieldName == None:
+            self._applicationFieldsKeyedByFieldName = self._new_getApplicationFields(True, True, True, True)
+
+        return self._applicationFieldsKeyedByFieldName
+
 
     def _new_getApplicationFields(self
                                   , recurseRepeatables
@@ -125,20 +144,26 @@ class Schema():
         if self.getFieldType(repeatableFieldName) != 'Repeatable':
             raise Exception('Error in Schema: a non repeatable field name: "{}" was passed to getValueFieldNamesThatAreChildrenOf'.format(repeatableFieldName))
 
-        jsonElement = self._getJsonElement(repeatableFieldName)
+
+
+
+        jsonElement = self._getJsonElementByFieldName(repeatableFieldName)
+
+
         if jsonElement:
-            return self._new_getApplicationFields(
-                                                recurseRepeatables=False
-                                                ,includeValueFields=True
-                                               ,includeRepeatables=False
-                                               ,includeSectionFields=False
-                                               ,json_structure=jsonElement['elements'])
+            return CHILD_LEVEL_FIELD_NAMES \
+                + self._new_getApplicationFields(
+                      recurseRepeatables=False
+                      ,includeValueFields=True
+                      ,includeRepeatables=False
+                      ,includeSectionFields=False
+                      ,json_structure=jsonElement['elements']).keys()
 
     def getRepeatableFieldNamesThatAreChildrenOfs(self, repeatableFieldName):
         if self.getFieldType(repeatableFieldName) != 'Repeatable':
             raise Exception('Error in Schema: a non repeatable field name: "{}" was passed to getRepeatableFieldNamesThatAreChildrenOf'.format(repeatableFieldName))
 
-        jsonElement = self._getJsonElement(repeatableFieldName)
+        jsonElement = self._getJsonElementByFieldName(repeatableFieldName)
         if jsonElement:
             return self._new_getApplicationFields(
                                                 recurseRepeatables=False

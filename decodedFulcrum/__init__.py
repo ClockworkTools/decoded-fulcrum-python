@@ -23,7 +23,9 @@ class DecodedFulcrum(Fulcrum):
         dictionaryOfSchemas = self._getSchemas()
 
         # ensure that when the "records" part of the fulcrum_api is called, the DecodedRecords functionality is invoked
+        # self.records = DecodedRecords(api_config, dictionaryOfSchemas, fieldNameLookups, fieldKeyLookups)
         self.records = DecodedRecords(api_config, dictionaryOfSchemas, fieldNameLookups, fieldKeyLookups)
+
         self.schemas = Schemas(dictionaryOfSchemas)
 
     def _getSchemas(self):
