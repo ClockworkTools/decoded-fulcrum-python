@@ -1,18 +1,79 @@
 __author__ = 'Keith Hannon'
-from decodedFulcrum.mixins import Findable, Deleteable, Createable, Searchable, Updateable
-from fulcrum.api import BaseAPI
+from fulcrum.api.endpoints import Records
+from decodedFulcrum.fulcrumJsonUtils import decode, recode
 
-class DecodedRecords(BaseAPI, Findable, Deleteable, Createable, Searchable, Updateable):
+class DecodedRecords(Records):
     path = 'records'
-    def __init__(self, api_config, fieldNameLookups, fieldKeyLookups):
+
+    def __init__(self, api_config, dictionaryOfSchemas, fieldNameLookups, fieldKeyLookups):
         super(DecodedRecords, self).__init__(api_config)
 
+        self.dictionaryOfSchemas = dictionaryOfSchemas
         self.fieldNameLookups = fieldNameLookups
         self.fieldKeyLookups = fieldKeyLookups
 
+    def find(self, id):
+        api_resp = super(DecodedRecords, self).find(id)
+
+        # decode the api response
+        decode(api_resp, self.fieldNameLookups)
+
+        return api_resp
+
+    def search(self, url_params=None):
+        api_resp = super(DecodedRecords, self).search(url_params)
+
+        # decode the api response
+        decode(api_resp, self.fieldNameLookups)
+
+        return api_resp
+
+    def create(self, obj):
+        # reapply the keys to the json object that has been passed back before it written to Fulcrum
+        recode(obj, self.fieldKeyLookups)
+
+        api_resp = super(DecodedRecords, self).create(obj)
+        api_resp = self.call('post', self.path, data=obj, extra_headers={'Content-Type': 'application/json'})
+
+        return api_resp
+
+    def update(self, id, obj):
+        # reapply the keys to the json object that has been passed back before it is written back to Fulcrum
+        recode(obj, self.fieldKeyLookups)
+
+        api_resp = super(DecodedRecords, self).update(id, obj)
+
+        # now decode the api response
+        decode(api_resp, self.fieldNameLookups)
+
+        return api_resp
+
     def history(self, id):
-        api_resp = api_resp = self.call('get', '{0}/{1}/history'.format(self.path, id))
+        api_resp = super(DecodedRecords, self).history(id)
+
+         # now decode the api response
+        # probably need to extract the record aspects before this works
+        decode(api_resp, self.fieldNameLookups)
+
         return api_resp
 
 
+class Schemas(object):
+    path = 'schemas'
+
+    def __init__(self, dictionaryOfSchemas):
+        self.dictionaryOfSchemas = dictionaryOfSchemas
+
+    def find(self, formIdOrName):
+        if formIdOrName in self.dictionaryOfSchemas:
+            return self.dictionaryOfSchemas[id]
+        else:
+            for formId, schema in self.dictionaryOfSchemas.items():
+                if schema.getName() == formIdOrName:
+                    return schema
+
+        raise Exception ('no such form')
+
+    def search(self):
+        return self.dictionaryOfSchemas
 
