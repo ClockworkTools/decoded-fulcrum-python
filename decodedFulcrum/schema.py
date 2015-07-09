@@ -157,9 +157,6 @@ class Schema():
         if self.getFieldType(repeatableFieldName) != 'Repeatable':
             raise Exception('Error in Schema: a non repeatable field name: "{}" was passed to getValueFieldNamesThatAreChildrenOf'.format(repeatableFieldName))
 
-
-
-
         jsonElement = self._getJsonElementByFieldName(repeatableFieldName)
 
 
