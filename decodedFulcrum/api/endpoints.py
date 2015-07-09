@@ -1,4 +1,5 @@
 __author__ = 'Keith Hannon'
+
 from fulcrum.api.endpoints import Records
 from decodedFulcrum.fulcrumJsonUtils import decode, recode
 
