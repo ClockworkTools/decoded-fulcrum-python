@@ -46,7 +46,7 @@ class Schema():
         if fieldName in applicationFields:
             return applicationFields[fieldName]
 
-    def _getJsonElementByFieldKey(self, key):
+    def _getJsonElementByFieldKey(self, searchKey):
         if self._applicationFieldsKeyedByKey == None:
             self._applicationFieldsKeyedByKey = {}
             applicationFieldsKeyedByName = self._getAllApplicationFields()
@@ -56,7 +56,7 @@ class Schema():
                     pass
                 self._applicationFieldsKeyedByKey[key] = jsonElement
 
-        return self._applicationFieldsKeyedByKey[key]
+        return self._applicationFieldsKeyedByKey[searchKey]
 
     def getFieldKeyByName(self, fieldName):
         jsonApplicationField = self._getJsonElementByFieldName(fieldName)

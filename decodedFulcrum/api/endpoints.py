@@ -2,13 +2,13 @@ __author__ = 'Keith Hannon'
 
 from fulcrum.api.endpoints import Records
 from decodedFulcrum.fulcrumJsonUtils import decode, recode
+from decodedFulcrum.schema import Schema
 
 class DecodedRecords(Records):
     path = 'records'
 
-    def __init__(self, api_config, dictionaryOfSchemas, fieldNameLookups, fieldKeyLookups):
+    def __init__(self, api_config, dictionaryOfSchemas):
         super(DecodedRecords, self).__init__(api_config)
-
         self.dictionaryOfSchemas = dictionaryOfSchemas
 
     def find(self, id):
@@ -25,6 +25,7 @@ class DecodedRecords(Records):
 
         # decode the api response
         decode(api_resp, self.dictionaryOfSchemas)
+        print 'x'
 
         return api_resp
 
@@ -56,7 +57,7 @@ class DecodedRecords(Records):
 
          # now decode the api response
         # probably need to extract the record aspects before this works
-        decode(api_resp, self.fieldNameLookups)
+        api_resp= decode(api_resp, self.dictionaryOfSchemas)
 
         return api_resp
 
@@ -64,12 +65,17 @@ class DecodedRecords(Records):
 class Schemas(object):
     path = 'schemas'
 
-    def __init__(self, dictionaryOfSchemas):
-        self.dictionaryOfSchemas = dictionaryOfSchemas
+    def __init__(self, forms):
+        self.dictionaryOfSchemas = {}
+        jsonForms = forms.search()['forms']   # this is a list of dictionary objects
+        for jsonForm in jsonForms:
+            schema = Schema(jsonForm)
+            formId = schema.getFormId()
+            self.dictionaryOfSchemas[formId] = schema
 
     def find(self, formIdOrName):
         if formIdOrName in self.dictionaryOfSchemas:
-            return self.dictionaryOfSchemas[id]
+            return self.dictionaryOfSchemas[formIdOrName]
         else:
             for formId, schema in self.dictionaryOfSchemas.items():
                 if schema.getName() == formIdOrName:

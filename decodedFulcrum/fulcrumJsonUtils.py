@@ -50,19 +50,19 @@ def getApplicationFieldNames(jsonElements):
     return applicationFieldNames
 
 
-def decode(json, schemas):
+def decode(json, dictionaryOfSchemas):
     if 'records' in json:
         for record in json['records']:
             form_id = record['form_id']
-            schema = schemas[form_id]
+            schema = dictionaryOfSchemas[form_id]
             _decode(record['form_values'], schema)
     elif 'record' in json:
         form_id = json['record']['form_id']
-        schema = schemas[form_id]
+        schema = dictionaryOfSchemas[form_id]
         _decode(json['record']['form_values'], schema)
     elif 'form_values' in json:
         form_id = json['form_id']
-        schema = schemas[form_id]
+        schema = dictionaryOfSchemas[form_id]
         _decode(json['form_values'], schema)
     else:
         raise Exception('its not working')
@@ -94,12 +94,12 @@ def _decode(jsonFormValuesField, schema):
             for childRecord in fieldValue:
                 _decode(childRecord['form_values'], schema)
 
-def recode(fulcrumJsonRecord, schemas):
+def recode(fulcrumJsonRecord, dictionaryOfSchemas):
     if 'form_values' not in fulcrumJsonRecord:
         raise Exception('its gone wrong on recode')
 
     form_id = fulcrumJsonRecord['form_id']
-    schema = schemas[form_id]
+    schema = dictionaryOfSchemas[form_id]
     _recode(fulcrumJsonRecord['form_values'], schema)
 
 def _recode(jsonFormValuesField, schema):

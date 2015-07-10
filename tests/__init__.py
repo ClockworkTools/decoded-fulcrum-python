@@ -6,8 +6,6 @@ from decodedFulcrum import config
 from decodedFulcrum import DecodedFulcrum
 
 
-
-
 class DecodedFulcrumTestCase(unittest.TestCase):
     api_root = 'https://api.fulcrumapp.com/api/v2'
 
