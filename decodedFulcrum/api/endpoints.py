@@ -65,9 +65,10 @@ class DecodedRecords(Records):
 class Schemas(object):
     path = 'schemas'
 
-    def __init__(self, forms):
+    def __init__(self, jsonForms):
+        #jsonForms is a list of forms
         self.dictionaryOfSchemas = {}
-        jsonForms = forms.search()['forms']   # this is a list of dictionary objects
+
         for jsonForm in jsonForms:
             schema = Schema(jsonForm)
             formId = schema.getFormId()

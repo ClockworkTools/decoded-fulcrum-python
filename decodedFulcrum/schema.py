@@ -19,14 +19,13 @@ __datecreated__ = '8/07/2015'
 
 from decodedFulcrum.fieldnames import SYSTEM_LEVEL_FIELD_NAMES, CHILD_LEVEL_FIELD_NAMES
 
-class Schema():
+class Schema(object):
     def __init__(self, jsonForm):
         self._jsonForm = jsonForm
 
         #the following dictionaries are populated on demand
         self._applicationFieldsKeyedByFieldName = None
         self._applicationFieldsKeyedByKey = None
-
 
     def getFormId(self):
         return self._jsonForm['id']
@@ -92,7 +91,6 @@ class Schema():
             self._applicationFieldsKeyedByFieldName = self._new_getApplicationFields(True, True, True, True)
 
         return self._applicationFieldsKeyedByFieldName
-
 
     def _new_getApplicationFields(self
                                   , recurseRepeatables

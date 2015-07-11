@@ -31,7 +31,7 @@ class DecodedFulcrum(Fulcrum):
 
         self.api_config = APIConfig(key=key, uri=uri)
 
-        self.schemas = Schemas(self.forms)
+        self.schemas = Schemas(self.forms.search()['forms'])
 
         # ensure that when the "records" part of the fulcrum_api is called, the DecodedRecords functionality is invoked
         # self.records = DecodedRecords(api_config, dictionaryOfSchemas, fieldNameLookups, fieldKeyLookups)
