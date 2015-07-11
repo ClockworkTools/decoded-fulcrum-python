@@ -76,13 +76,6 @@ class Schema(object):
             if jsonApplicationField:
                 return jsonApplicationField['type']
 
-    def getTopLevelValueFieldNames(self):
-        return SYSTEM_LEVEL_FIELD_NAMES \
-               + self._new_getApplicationFields(recurseRepeatables=False
-                                                ,includeValueFields=True
-                                                ,includeRepeatables=False
-                                                ,includeSectionFields=False).keys()
-
     def _getAllApplicationFields(self):
         # This returns all the KeyedFields in the form
         # A Repeatable is a KeyedField, as well as all the fields defined within it
@@ -138,44 +131,28 @@ class Schema(object):
 
         return applicationFields
 
-
-
-    def getTopLevelRepeatableFieldNames(self):
-        return self._new_getApplicationFields(
-                recurseRepeatables=False
-                ,includeValueFields=False
-                ,includeRepeatables=True
-                ,includeSectionFields=False)
+    def getTopLevelApplicationFieldNames(self):
+        return self._new_getApplicationFields(recurseRepeatables=False
+                                                ,includeValueFields=True
+                                                ,includeRepeatables=False
+                                                ,includeSectionFields=True).keys()
 
     def _getApplicationField(self, fieldName):
         if fieldName in self._getAllApplicationFields().keys():
             return self._getAllApplicationFields[fieldName]
 
-    def getValueFieldNamesThatAreChildrenOf(self, repeatableFieldName):
-        if self.getFieldType(repeatableFieldName) != 'Repeatable':
-            raise Exception('Error in Schema: a non repeatable field name: "{}" was passed to getValueFieldNamesThatAreChildrenOf'.format(repeatableFieldName))
+    def getApplicationFieldNamesThatAreChildrenOf(self, repeatableOrSectionFieldName):
+        if self.getFieldType(repeatableOrSectionFieldName) not in ('Repeatable', 'Section'):
+            raise Exception('Error in Schema: a field name that is not a repeatable or section: "{}" was passed to getApplicationFieldNamesThatAreChildrenOf'.format(repeatableOrSectionFieldName))
 
-        jsonElement = self._getJsonElementByFieldName(repeatableFieldName)
-
+        jsonElement = self._getJsonElementByFieldName(repeatableOrSectionFieldName)
 
         if jsonElement:
-            return CHILD_LEVEL_FIELD_NAMES \
-                + self._new_getApplicationFields(
+            return self._new_getApplicationFields(
                       recurseRepeatables=False
                       ,includeValueFields=True
                       ,includeRepeatables=False
                       ,includeSectionFields=False
                       ,json_structure=jsonElement['elements']).keys()
 
-    def getRepeatableFieldNamesThatAreChildrenOfs(self, repeatableFieldName):
-        if self.getFieldType(repeatableFieldName) != 'Repeatable':
-            raise Exception('Error in Schema: a non repeatable field name: "{}" was passed to getRepeatableFieldNamesThatAreChildrenOf'.format(repeatableFieldName))
 
-        jsonElement = self._getJsonElementByFieldName(repeatableFieldName)
-        if jsonElement:
-            return self._new_getApplicationFields(
-                                                recurseRepeatables=False
-                                               ,includeValueFields=False
-                                               ,includeRepeatables=True
-                                               ,includeSectionFields=False
-                                               ,json_structure=jsonElement['elements'])

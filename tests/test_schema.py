@@ -30,15 +30,11 @@ class SchemaTest(DecodedFulcrumTestCase):
         self.assertTrue('contact_phone_numbers' in schema._getAllApplicationFields().keys())
         self.assertTrue('type_of_phone_number' in schema._getAllApplicationFields())
 
-        self.assertTrue('customer_name' in schema.getTopLevelValueFieldNames())
-        self.assertFalse('contact_phone_numbers' in schema.getTopLevelValueFieldNames())
-        self.assertFalse('type_of_phone_number' in schema.getTopLevelValueFieldNames())
+        self.assertTrue('customer_name' in schema.getTopLevelApplicationFieldNames())
+        self.assertFalse('contact_phone_numbers' in schema.getTopLevelApplicationFieldNames())
+        self.assertFalse('type_of_phone_number' in schema.getTopLevelApplicationFieldNames())
 
-        self.assertFalse('customer_name' in schema.getTopLevelRepeatableFieldNames())
-        self.assertTrue('contact_phone_numbers' in schema.getTopLevelRepeatableFieldNames())
-        self.assertFalse('type_of_phone_number' in schema.getTopLevelRepeatableFieldNames())
-
-        self.assertFalse('customer_name' in schema.getValueFieldNamesThatAreChildrenOf('contact_phone_numbers'))
-        self.assertTrue('type_of_phone_number' in schema.getValueFieldNamesThatAreChildrenOf('contact_phone_numbers'))
-        self.assertFalse('contact_phone_numbers' in schema.getValueFieldNamesThatAreChildrenOf('contact_phone_numbers'))
+        self.assertFalse('customer_name' in schema.getApplicationFieldNamesThatAreChildrenOf('contact_phone_numbers'))
+        self.assertTrue('type_of_phone_number' in schema.getApplicationFieldNamesThatAreChildrenOf('contact_phone_numbers'))
+        self.assertFalse('contact_phone_numbers' in schema.getApplicationFieldNamesThatAreChildrenOf('contact_phone_numbers'))
 
