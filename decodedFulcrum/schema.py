@@ -22,7 +22,6 @@ from decodedFulcrum.fieldnames import SYSTEM_LEVEL_FIELD_NAMES, CHILD_LEVEL_FIEL
 class Schema(object):
     def __init__(self, jsonForm):
         self._jsonForm = jsonForm
-
         #the following dictionaries are populated on demand
         self._applicationFieldsKeyedByFieldName = None
         self._applicationFieldsKeyedByKey = None
@@ -154,5 +153,10 @@ class Schema(object):
                       ,includeRepeatables=False
                       ,includeSectionFields=False
                       ,json_structure=jsonElement['elements']).keys()
+
+    def flushForm(self, jsonForm):
+        # This is used when it is possible the schema has changed, and is invoked from the Fulcrum Account
+        self._schema = jsonForm
+
 
 

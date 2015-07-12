@@ -8,7 +8,9 @@ from decodedFulcrum.schema import Schema
 
 class SchemaTest(DecodedFulcrumTestCase):
     def test_getFormId(self):
+        #TODO replace the following with a hard coded jsonForm
         form = self.fulcrum_api.forms.find(config.FORM_ID)['form']
+
         schema = Schema(form)
 
         self.assertEquals(schema.getFormId(), config.FORM_ID)

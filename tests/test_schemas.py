@@ -9,5 +9,11 @@ class SchemasTest(DecodedFulcrumTestCase):
         schema = self.fulcrum_api.schemas.find(config.FORM_ID)
         self.assertTrue(schema.getFormName() == 'Estimate')
 
+    def testSearch(self):
+        schemas = self.fulcrum_api.schemas.search()
+        self.assertTrue(schemas[config.FORM_ID]) == 'Estiamte'
+
+
+
 
 
