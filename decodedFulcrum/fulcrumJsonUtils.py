@@ -89,7 +89,9 @@ def _decode(jsonFormValuesField, schema):
         del jsonFormValuesField[fieldCode]
 
         # process any children of the added field
-        if isinstance(fieldValue, list):
+        fieldType = schema.getFieldType(fieldName)
+
+        if fieldType == 'Repeatable':
             # fieldValue is a list of child records
             for childRecord in fieldValue:
                 _decode(childRecord['form_values'], schema)
