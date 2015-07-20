@@ -34,7 +34,6 @@ class DecodedRecords(Records):
         recode(obj, self.dictionaryOfSchemas)
 
         api_resp = super(DecodedRecords, self).create(obj)
-        api_resp = self.call('post', self.path, data=obj, extra_headers={'Content-Type': 'application/json'})
 
         # now decode the api response
         decode(api_resp, self.dictionaryOfSchemas)
