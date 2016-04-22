@@ -138,7 +138,7 @@ class Schema(object):
 
     def _getApplicationField(self, fieldName):
         if fieldName in self._getAllApplicationFields().keys():
-            return self._getAllApplicationFields[fieldName]
+            return self._getAllApplicationFields()[fieldName]
 
     def getApplicationFieldNamesThatAreChildrenOf(self, repeatableOrSectionFieldName):
         if self.getFieldType(repeatableOrSectionFieldName) not in ('Repeatable', 'Section'):
@@ -158,5 +158,10 @@ class Schema(object):
         # This is used when it is possible the schema has changed, and is invoked from the Fulcrum Account
         self._schema = jsonForm
 
+    def getFormIdOfRecordLinkField(self, fieldName):
+       if self.getFieldType(fieldName) != 'RecordLinkField':
+            raise Exception('getFormIdOfRecordLinkField was passed a field that is not a record link field')
 
-
+       recordLinkField = self._getApplicationField(fieldName)
+       formId = recordLinkField['form_id']
+       return formId
