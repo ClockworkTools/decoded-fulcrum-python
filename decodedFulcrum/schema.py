@@ -165,3 +165,33 @@ class Schema(object):
        recordLinkField = self._getApplicationField(fieldName)
        formId = recordLinkField['form_id']
        return formId
+
+    def getAllowMultipleRecordSettingOfRecordLinkField(self, fieldName):
+       if self.getFieldType(fieldName) != 'RecordLinkField':
+            raise Exception('getAllowMultipleRecordSettingOfRecordLinkField was passed a field that is not a record link field')
+
+       recordLinkField = self._getApplicationField(fieldName)
+       allowMultipleRecords =  recordLinkField['allow_multiple_records']
+       return allowMultipleRecords
+
+    def getAutopopulatedFieldSourcesForRecordLinkField(self, recordLinkFieldName, otherSchema):
+        #other schema is required in order to retrieve the source field name
+
+        #returns a dictionary of field sources keyed by field name
+        # i.e. the key is the field name in this schema
+        # the  value is the field name in the other schema
+        autopopulatedFieldSources = {}
+        if self.getFieldType(recordLinkFieldName) != 'RecordLinkField':
+            raise Exception('getAutopopulatedFieldSoucesForRecordLinkField was passed a field that is not a record link field')
+
+        recordLinkField = self._getApplicationField(recordLinkFieldName)
+        for listItem in recordLinkField['record_defaults']:
+            destFieldKey = listItem['destination_field_key']
+            sourceFieldKey = listItem['source_field_key']
+
+            destFieldName = self.getFieldNameByKey(destFieldKey)
+            sourceFieldName = otherSchema.getFieldNameByKey(sourceFieldKey)
+
+            autopopulatedFieldSources[destFieldName] = sourceFieldName
+
+        return autopopulatedFieldSources
