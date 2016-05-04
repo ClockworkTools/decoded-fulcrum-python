@@ -36,6 +36,7 @@ SYSTEM_LEVEL_FIELD_NAMES =  ['altitude'
                             ,'version'
                             ,'speed'
                             ,'updated_at'
+                            ,'updated_by'
                             ,'updated_by_id'
                             ,'vertical_accuracy'
                             ]
