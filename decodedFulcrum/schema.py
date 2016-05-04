@@ -54,7 +54,14 @@ class Schema(object):
                     pass
                 self._applicationFieldsKeyedByKey[key] = jsonElement
 
-        return self._applicationFieldsKeyedByKey[searchKey]
+        # A json file may contain a key which is not present in the form. If this is the case return None
+        # This can happen because either:
+        #   1) a field has been deleted from the form, and a device which whad not been synchronized with the latest change
+        #      submits a record including the value
+        #   2) the field has been added since the schema was cached
+
+        if searchKey in self._applicationFieldsKeyedByKey:
+            return self._applicationFieldsKeyedByKey[searchKey]
 
     def getFieldKeyByName(self, fieldName):
         jsonApplicationField = self._getJsonElementByFieldName(fieldName)
@@ -63,6 +70,8 @@ class Schema(object):
 
     def getFieldNameByKey(self, fieldKey):
         jsonElement = self._getJsonElementByFieldKey(fieldKey)
+
+        # if the schema does not contain this key, return None
         if jsonElement:
             return jsonElement['data_name']
 

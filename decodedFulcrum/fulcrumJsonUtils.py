@@ -83,18 +83,22 @@ def _decode(jsonFormValuesField, schema):
     for fieldCode, fieldValue in jsonFormValuesField.items():
         # add a copy of the field with the fieldName instead of the fieldCode
         fieldName = schema.getFieldNameByKey(fieldCode)
-        jsonFormValuesField[fieldName]=fieldValue
 
-        # delete the original field
-        del jsonFormValuesField[fieldCode]
+        # only process the field if the fieldName is found in the schema
+        # otherwise, leave the field alone (in its non decoded state)
+        if fieldName is not None:
+            jsonFormValuesField[fieldName]=fieldValue
 
-        # process any children of the added field
-        fieldType = schema.getFieldType(fieldName)
+            # delete the original field
+            del jsonFormValuesField[fieldCode]
 
-        if fieldType == 'Repeatable':
-            # fieldValue is a list of child records
-            for childRecord in fieldValue:
-                _decode(childRecord['form_values'], schema)
+            # process any children of the added field
+            fieldType = schema.getFieldType(fieldName)
+
+            if fieldType == 'Repeatable':
+                # fieldValue is a list of child records
+                for childRecord in fieldValue:
+                    _decode(childRecord['form_values'], schema)
 
 def recode(fulcrumJsonRecord, dictionaryOfSchemas):
     if 'form_values' not in fulcrumJsonRecord:
@@ -115,17 +119,21 @@ def _recode(jsonFormValuesField, schema):
     for fieldName, fieldValue in jsonFormValuesField.items():
         # add a copy of the field with the fieldName instead of the fieldCode
         key = schema.getFieldKeyByName(fieldName)
-        jsonFormValuesField[key]=fieldValue
 
-        # delete the original field
-        del jsonFormValuesField[fieldName]
+        # If the form does not know about this field, it will not have been decoded
+        # and in this case, just leave it alone
+        if key is not None:
+            jsonFormValuesField[key] = fieldValue
 
-        # process any children of the added field
-        fieldType = schema.getFieldType(fieldName)
+            # delete the original field
+            del jsonFormValuesField[fieldName]
 
-        if fieldType == 'Repeatable':
-            # fieldValue is a list of child records
-            for childRecord in fieldValue:
-                _recode(childRecord['form_values'], schema)
+            # process any children of the added field
+            fieldType = schema.getFieldType(fieldName)
+
+            if fieldType == 'Repeatable':
+                # fieldValue is a list of child records
+                for childRecord in fieldValue:
+                    _recode(childRecord['form_values'], schema)
 
     return jsonFormValuesField

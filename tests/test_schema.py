@@ -40,3 +40,4 @@ class SchemaTest(DecodedFulcrumTestCase):
         self.assertTrue('type_of_phone_number' in schema.getApplicationFieldNamesThatAreChildrenOf('contact_phone_numbers'))
         self.assertFalse('contact_phone_numbers' in schema.getApplicationFieldNamesThatAreChildrenOf('contact_phone_numbers'))
 
+
