@@ -183,6 +183,15 @@ class Schema(object):
        allowMultipleRecords =  recordLinkField['allow_multiple_records']
        return allowMultipleRecords
 
+    def getDisabledSettingOfRecordLinkField(self, fieldName):
+       if self.getFieldType(fieldName) != 'RecordLinkField':
+            raise Exception('getReadOnlySettingOfRecordLinkField was passed a field that is not a record link field')
+
+       recordLinkField = self._getApplicationField(fieldName)
+       disabledSetting =  recordLinkField['disabled']
+       return disabledSetting
+
+
     def getAutopopulatedFieldSourcesForRecordLinkField(self, recordLinkFieldName, otherSchema):
         #other schema is required in order to retrieve the source field name
 
