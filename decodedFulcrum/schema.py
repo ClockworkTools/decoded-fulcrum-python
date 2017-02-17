@@ -76,7 +76,7 @@ class Schema(object):
             return jsonElement['data_name']
 
     def getFieldType(self, fieldName):
-        if fieldName in SYSTEM_LEVEL_FIELD_NAMES:
+        if fieldName in SYSTEM_LEVEL_FIELD_NAMES or fieldName in CHILD_LEVEL_FIELD_NAMES:
             return 'System'
         else:
             jsonApplicationField = self._getJsonElementByFieldName(fieldName)
