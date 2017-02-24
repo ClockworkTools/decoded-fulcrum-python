@@ -144,6 +144,13 @@ class Schema(object):
                                                 ,includeValueFields=True
                                                 ,includeRepeatables=False
                                                 ,includeSectionFields=True).keys()
+    def getTopLevelRepeatableFieldNames(self):
+        return self._new_getApplicationFields(
+                recurseRepeatables=False
+                ,includeValueFields=False
+                ,includeRepeatables=True
+                ,includeSectionFields=False).keys()
+
 
     def _getApplicationField(self, fieldName):
         if fieldName in self._getAllApplicationFields().keys():
