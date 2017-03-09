@@ -25,7 +25,6 @@ class DecodedRecords(Records):
 
         # decode the api response
         decode(api_resp, self.dictionaryOfSchemas)
-        print 'x'
 
         return api_resp
 
