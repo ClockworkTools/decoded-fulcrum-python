@@ -57,6 +57,10 @@ def decode(json, dictionaryOfSchemas):
             schema = dictionaryOfSchemas[form_id]
             _decode(record['form_values'], schema)
     elif 'record' in json:
+        if 'errors' in json['record']:
+            # do not modify the json, let the calling process manage this
+            return
+
         form_id = json['record']['form_id']
         schema = dictionaryOfSchemas[form_id]
         _decode(json['record']['form_values'], schema)
