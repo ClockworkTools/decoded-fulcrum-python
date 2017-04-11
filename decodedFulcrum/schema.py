@@ -84,6 +84,43 @@ class Schema(object):
             if jsonApplicationField:
                 return jsonApplicationField['type']
 
+    def getChoiceListIdForField(self, fieldName):
+        fieldType = self.getFieldType(fieldName)
+        if fieldType is None:
+            return None
+
+        if fieldType != 'ChoiceField':
+            return None
+
+        jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+
+        if 'choice_list_id' in jsonApplicationField:
+            return jsonApplicationField['choice_list_id']
+
+    def getChoiceFieldSpecifiedLookupValues (self, fieldName):
+        """
+
+        :param fieldName: string
+        :return: a dictionary of key - value pairs
+        """
+
+        fieldType = self.getFieldType(fieldName)
+        if fieldType != 'ChoiceField':
+            return None
+
+        jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+        if 'choices' not in  jsonApplicationField:
+            return None
+
+        dictionaryOfSpecifiedLookupValues = {}
+        for item in jsonApplicationField['choices']:
+            itemKey = item['value']
+            itemName = item['label']
+            dictionaryOfSpecifiedLookupValues[itemKey] = itemName
+
+        return dictionaryOfSpecifiedLookupValues
+
+
     def _getAllApplicationFields(self):
         # This returns all the KeyedFields in the form
         # A Repeatable is a KeyedField, as well as all the fields defined within it
