@@ -97,7 +97,7 @@ class Schema(object):
         if 'choice_list_id' in jsonApplicationField:
             return jsonApplicationField['choice_list_id']
 
-    def getChoiceFieldSpecifiedLookupValues (self, fieldName):
+    def getSpecifiedLookupValuesForField (self, fieldName):
         """
 
         :param fieldName: string
