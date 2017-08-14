@@ -200,6 +200,11 @@ class Schema(object):
         return fieldNames
 
     def getTopLevelApplicationFieldNames(self):
+        """
+        return the list of field names defined for the form in the sequence definedthat contain data values rather than other fields
+        note that system fields are not returned
+        :return list of Strings:
+        """
         fieldNamesToReturn = []
         topLevelApplicationFields = self._new_getApplicationFields(recurseRepeatables=False
                                                 ,includeValueFields=True
