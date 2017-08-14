@@ -77,7 +77,7 @@ class Schemas(object):
             return self.dictionaryOfSchemas[formIdOrName]
         else:
             for formId, schema in self.dictionaryOfSchemas.items():
-                if schema.getName() == formIdOrName:
+                if schema.getFormName() == formIdOrName:
                     return schema
 
         raise Exception ('no such form')

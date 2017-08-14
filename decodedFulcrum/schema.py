@@ -84,6 +84,8 @@ class Schema(object):
             if jsonApplicationField:
                 return jsonApplicationField['type']
 
+
+
     def getChoiceListIdForField(self, fieldName):
         fieldType = self.getFieldType(fieldName)
         if fieldType is None:
@@ -176,18 +178,55 @@ class Schema(object):
 
         return applicationFields
 
+    def _getSequencedFieldNames(self, json=None):
+        """
+        Recurively return all field names defined for the form
+        :param jsonElement: json structure
+        :return: list of string
+        """
+        if json is None:
+            json = self._jsonForm['elements']
+
+        fieldNames = []
+        for jsonElement in json:
+            fieldName = jsonElement['data_name']
+            fieldNames.append(fieldName)
+
+            type = jsonElement['type']
+            if type == 'Section' or type == 'Repeatable':
+                nestedFieldNames = self._getSequencedFieldNames(jsonElement['elements'])
+                fieldNames.extend(nestedFieldNames)
+
+        return fieldNames
+
     def getTopLevelApplicationFieldNames(self):
-        return self._new_getApplicationFields(recurseRepeatables=False
+        fieldNamesToReturn = []
+        topLevelApplicationFields = self._new_getApplicationFields(recurseRepeatables=False
                                                 ,includeValueFields=True
                                                 ,includeRepeatables=False
-                                                ,includeSectionFields=True).keys()
+                                                ,includeSectionFields=False).keys()
+
+        #Return the field names in the sequence defined in the form
+        for fieldName in self._getSequencedFieldNames():
+            if fieldName in topLevelApplicationFields:
+                fieldNamesToReturn.append(fieldName)
+
+        return fieldNamesToReturn
+
     def getTopLevelRepeatableFieldNames(self):
-        return self._new_getApplicationFields(
+        fieldNamesToReturn = []
+        topLevelRepeatableFields = self._new_getApplicationFields(
                 recurseRepeatables=False
                 ,includeValueFields=False
                 ,includeRepeatables=True
                 ,includeSectionFields=False).keys()
 
+        # Return the field names in the sequence defined in the form
+        for fieldName in self._getSequencedFieldNames():
+            if fieldName in topLevelRepeatableFields:
+                fieldNamesToReturn.append(fieldName)
+
+        return fieldNamesToReturn
 
     def _getApplicationField(self, fieldName):
         if fieldName in self._getAllApplicationFields().keys():
