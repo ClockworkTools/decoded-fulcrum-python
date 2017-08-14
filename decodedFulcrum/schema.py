@@ -258,6 +258,15 @@ class Schema(object):
        formId = recordLinkField['form_id']
        return formId
 
+    def getClassificationSetIdOfClassificationField(self, fieldName):
+       if self.getFieldType(fieldName) != 'ClassificationField':
+            raise Exception('getClassificationSetIdOfClassificationField was passed a field that is not a Classification field')
+
+       classificationSetField = self._getApplicationField(fieldName)
+       classificationSetId = classificationSetField['classification_set_id']
+       return classificationSetId
+
+
     def getAllowMultipleRecordSettingOfRecordLinkField(self, fieldName):
        if self.getFieldType(fieldName) != 'RecordLinkField':
             raise Exception('getAllowMultipleRecordSettingOfRecordLinkField was passed a field that is not a record link field')
