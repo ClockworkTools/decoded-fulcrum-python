@@ -213,6 +213,15 @@ class Schema(object):
 
         return fieldNamesToReturn
 
+    def getTopLevelRecordLinkFieldNames(self):
+        fieldNamesToReturn = []
+        for fieldName in self.getTopLevelApplicationFieldNames():
+            if self.getFieldType(fieldName):
+                fieldNamesToReturn.append(fieldName)
+
+        return fieldNamesToReturn
+
+
     def getTopLevelRepeatableFieldNames(self):
         fieldNamesToReturn = []
         topLevelRepeatableFields = self._new_getApplicationFields(
