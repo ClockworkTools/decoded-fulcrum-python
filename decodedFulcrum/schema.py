@@ -221,7 +221,7 @@ class Schema(object):
     def getTopLevelRecordLinkFieldNames(self):
         fieldNamesToReturn = []
         for fieldName in self.getTopLevelApplicationFieldNames():
-            if self.getFieldType(fieldName):
+            if self.getFieldType(fieldName) == 'RecordLinkField':
                 fieldNamesToReturn.append(fieldName)
 
         return fieldNamesToReturn
