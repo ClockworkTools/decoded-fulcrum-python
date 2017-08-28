@@ -84,7 +84,14 @@ class Schema(object):
             if jsonApplicationField:
                 return jsonApplicationField['type']
 
+    def getFieldLabel(self, fieldName):
+        if fieldName in SYSTEM_LEVEL_FIELD_NAMES or fieldName in CHILD_LEVEL_FIELD_NAMES:
+            return fieldName
+        else:
+            jsonApplicationField = self._getJsonElementByFieldName(fieldName)
 
+            if jsonApplicationField:
+                return jsonApplicationField['label']
 
     def getChoiceListIdForField(self, fieldName):
         fieldType = self.getFieldType(fieldName)
