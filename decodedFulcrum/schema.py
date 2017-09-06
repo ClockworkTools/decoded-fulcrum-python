@@ -93,6 +93,28 @@ class Schema(object):
             if jsonApplicationField:
                 return jsonApplicationField['label']
 
+    def getFieldDescription(self, fieldName):
+        if fieldName not in SYSTEM_LEVEL_FIELD_NAMES and fieldName not in CHILD_LEVEL_FIELD_NAMES:
+            jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+
+            if jsonApplicationField:
+                return jsonApplicationField['description']
+
+    def getFormVersion(self):
+        """
+        :return: int
+        """
+        return self._jsonForm['version']
+
+    def getTitleFieldNames(self):
+        titleFieldNames = []
+        for titleFieldKey in self._jsonForm['title_field_keys']:
+            fieldName = self.getFieldNameByKey(titleFieldKey)
+            titleFieldNames.append(fieldName)
+
+        return titleFieldNames
+
+
     def getChoiceListIdForField(self, fieldName):
         fieldType = self.getFieldType(fieldName)
         if fieldType is None:
@@ -326,3 +348,12 @@ class Schema(object):
             autopopulatedFieldSources[destFieldName] = sourceFieldName
 
         return autopopulatedFieldSources
+
+    def setFormDescription(self, formDescription):
+        self._jsonForm['description'] = formDescription
+
+
+    def setFieldDescription(self, fieldName, fieldDesciption):
+        jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+        jsonApplicationField['description'] = fieldDesciption
+
