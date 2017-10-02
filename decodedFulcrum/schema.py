@@ -17,6 +17,7 @@ __datecreated__ = '8/07/2015'
 """
 
 
+import collections
 from decodedFulcrum.fieldnames import SYSTEM_LEVEL_FIELD_NAMES, CHILD_LEVEL_FIELD_NAMES
 
 class Schema(object):
@@ -143,7 +144,7 @@ class Schema(object):
         if 'choices' not in  jsonApplicationField:
             return None
 
-        dictionaryOfSpecifiedLookupValues = {}
+        dictionaryOfSpecifiedLookupValues = collections.OrderedDict()
         for item in jsonApplicationField['choices']:
             itemKey = item['value']
             itemName = item['label']
@@ -348,6 +349,24 @@ class Schema(object):
             autopopulatedFieldSources[destFieldName] = sourceFieldName
 
         return autopopulatedFieldSources
+
+    def getYesValueOfYesNoField(self, fieldName):
+        fieldType = self.getFieldType(fieldName)
+        if fieldType != 'YesNoField':
+            raise Exception('Error: function getYesValue() was called for field: {} in app: {}. This is not a YesNoField.'.format(fieldName, self.getFormName()))
+
+        yesNoField = self._getApplicationField(fieldName)
+        return yesNoField['positive']['value']
+
+    def getNoValueOfYesNoField(self, fieldName):
+        fieldType = self.getFieldType(fieldName)
+        if fieldType != 'YesNoField':
+            raise Exception('Error: function getYesValue() was called for field: {} in app: {}. This is not a YesNoField.'.format(fieldName, self.getFormName()))
+
+        yesNoField = self._getApplicationField(fieldName)
+        return yesNoField['negative']['value']
+
+
 
     def setFormDescription(self, formDescription):
         self._jsonForm['description'] = formDescription
