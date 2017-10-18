@@ -85,6 +85,42 @@ class Schema(object):
             if jsonApplicationField:
                 return jsonApplicationField['type']
 
+    def isFieldNumeric(self, fieldName):
+        if self.getFieldType(fieldName) != 'TextField':
+            return False
+
+        jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+        if jsonApplicationField['numeric']:
+            return True
+        else:
+            return False
+
+    def isFieldInteger(self, fieldName):
+        if not self.isFieldNumeric(fieldName):
+            return False
+        else:
+            jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+            if jsonApplicationField['format'] == 'integer':
+                return True
+            else:
+                return False
+
+    def isValidValue(self, fieldName, fieldValue):
+        if fieldValue is not None:
+            if self.isFieldNumeric(fieldName):
+                if self.isFieldInteger(fieldName):
+                    try:
+                        int(fieldValue)
+                    except:
+                        return False
+                else:
+                    try:
+                        float(fieldValue)
+                    except:
+                        return False
+
+        return True
+
     def getFieldLabel(self, fieldName):
         if fieldName in SYSTEM_LEVEL_FIELD_NAMES or fieldName in CHILD_LEVEL_FIELD_NAMES:
             return fieldName
