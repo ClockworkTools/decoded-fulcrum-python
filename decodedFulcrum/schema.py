@@ -18,6 +18,8 @@ __datecreated__ = '8/07/2015'
 
 
 import collections
+import re
+
 from decodedFulcrum.fieldnames import SYSTEM_LEVEL_FIELD_NAMES, CHILD_LEVEL_FIELD_NAMES
 
 class Schema(object):
@@ -118,6 +120,16 @@ class Schema(object):
                         float(fieldValue)
                     except:
                         return False
+
+            if self.getFieldType(fieldName) == 'TimeField':
+                if not re.match("^\d\d:\d\d$",fieldValue):
+                    return False
+
+                hours = int(fieldValue[0:1])
+                minutes = int(fieldValue[3:])
+
+                if hours < 0 or hours > 24 or minutes < 0 or minutes > 60:
+                    return False
 
         return True
 
@@ -411,4 +423,26 @@ class Schema(object):
     def setFieldDescription(self, fieldName, fieldDesciption):
         jsonApplicationField = self._getJsonElementByFieldName(fieldName)
         jsonApplicationField['description'] = fieldDesciption
+
+
+    def setFormIdOfRecordLinkField(self, fieldName, formId):
+        jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+        jsonApplicationField['form_id'] = formId
+
+    def setChoiceListIdOfChoiceListField(self, fieldName, choiceListId):
+        if choiceListId is None:
+            raise Exception('Error calling function setChoiceListIdOfChoiceListField() for field named: {}. Setting the choiceListId to None is not permitted - use setChoices() instead.'.format(fieldName))
+
+        jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+        jsonApplicationField['choice_list_id'] = choiceListId
+
+        if 'choices' in jsonApplicationField:
+            del jsonApplicationField['choices']
+
+    def setClassificationSetIdOfClassificationSetField(self, fieldName, classificationSetId):
+        if classificationSetId is None:
+            raise Exception('Error calling function setClassificationSetIdOfClassificationSetField() for field named: {}. Setting the classificationSetId to None is not permitted.'.format(fieldName))
+
+        jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+        jsonApplicationField['classification_set_id'] = classificationSetId
 
