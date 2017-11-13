@@ -446,3 +446,14 @@ class Schema(object):
         jsonApplicationField = self._getJsonElementByFieldName(fieldName)
         jsonApplicationField['classification_set_id'] = classificationSetId
 
+    def getANewUniqueKey(self):
+        newKeyNumeric = 1111
+        newKey = str(newKeyNumeric)
+
+        while self.getFieldNameByKey(newKey) is not None:
+            newKeyNumeric += 1
+            newKey = str(newKeyNumeric)
+
+        return newKey
+
+
