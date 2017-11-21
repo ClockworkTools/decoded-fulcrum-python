@@ -43,9 +43,12 @@ class Schema(object):
             return description
 
     def _getJsonElementByFieldName(self, fieldName):
-        applicationFields = self._getAllApplicationFields()
-        if fieldName in applicationFields:
-            return applicationFields[fieldName]
+        if fieldName == 'status':
+            return self._jsonForm['status_field']
+        else:
+            applicationFields = self._getAllApplicationFields()
+            if fieldName in applicationFields:
+                return applicationFields[fieldName]
 
     def _getJsonElementByFieldKey(self, searchKey):
         if self._applicationFieldsKeyedByKey == None:
@@ -108,7 +111,10 @@ class Schema(object):
                 return False
 
     def isValidValue(self, fieldName, fieldValue):
-        if fieldValue is not None:
+        if fieldValue is None:
+            if self.isRequired(fieldName):
+                return False
+        else:
             if self.isFieldNumeric(fieldName):
                 if self.isFieldInteger(fieldName):
                     try:
@@ -185,7 +191,7 @@ class Schema(object):
         """
 
         fieldType = self.getFieldType(fieldName)
-        if fieldType != 'ChoiceField':
+        if fieldName != 'status' and fieldType != 'ChoiceField':
             return None
 
         jsonApplicationField = self._getJsonElementByFieldName(fieldName)
@@ -456,4 +462,35 @@ class Schema(object):
 
         return newKey
 
+    def isHidden(self, fieldName):
+        jsonField = self._getJsonElementByFieldName(fieldName)
+        if jsonField is None:
+            raise Exception('Error calling schema.isHidden({}) for app: {} - this field is not defined in this form'.format(fieldName, self.getFormName()))
 
+        return jsonField['hidden']
+
+    def isReadOnly(self, fieldName):
+        jsonField = self._getJsonElementByFieldName(fieldName)
+        if jsonField is None:
+            raise Exception('Error calling schema.isReadOnly({}) for app: {} - this field is not defined in this form'.format(fieldName, self.getFormName()))
+
+        return jsonField['disabled']
+
+
+    def isRequired(self, fieldName):
+        jsonField = self._getJsonElementByFieldName(fieldName)
+        if jsonField is None:
+            raise Exception(
+                'Error calling schema.isRequired({}) for app: {} - this field is not defined in this form'.format(fieldName,
+                                                                                                                self.getFormName()))
+
+        return jsonField['required']
+
+    def isDisabled(self, fieldName):
+        jsonField = self._getJsonElementByFieldName(fieldName)
+        if jsonField is None:
+            raise Exception(
+                'Error calling schema.isRequired({}) for app: {} - this field is not defined in this form'.format(fieldName,
+                                                                                                                  self.getFormName()))
+
+        return jsonField['disabled']
