@@ -494,3 +494,12 @@ class Schema(object):
                                                                                                                   self.getFormName()))
 
         return jsonField['disabled']
+
+    def isStatusEnabled(self):
+        jsonField = self._getJsonElementByFieldName('status')
+        if jsonField is None:
+            raise Exception(
+                'Error calling schema.isRequired({}) for app: {} - this field is not defined in this form'.format('status',
+                                                                                                                  self.getFormName()))
+
+        return jsonField['enabled']
