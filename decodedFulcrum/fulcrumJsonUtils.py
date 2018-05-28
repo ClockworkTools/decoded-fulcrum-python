@@ -105,12 +105,12 @@ def _decode(jsonFormValuesField, schema):
                     _decode(childRecord['form_values'], schema)
 
 def recode(fulcrumJsonRecord, dictionaryOfSchemas):
-    if 'form_values' not in fulcrumJsonRecord:
+    if 'form_values' not in fulcrumJsonRecord['record']:
         raise Exception('its gone wrong on recode')
 
-    form_id = fulcrumJsonRecord['form_id']
+    form_id = fulcrumJsonRecord['record']['form_id']
     schema = dictionaryOfSchemas[form_id]
-    _recode(fulcrumJsonRecord['form_values'], schema)
+    _recode(fulcrumJsonRecord['record']['form_values'], schema)
 
 def _recode(jsonFormValuesField, schema):
     # jsonFormValuesField, is a dictionary item of a fulcrum record or child record with the key 'form_values'
