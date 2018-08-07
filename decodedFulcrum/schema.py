@@ -425,6 +425,10 @@ class Schema(object):
     def setFormDescription(self, formDescription):
         self._jsonForm['description'] = formDescription
 
+    def setFormName(self, newFormName):
+        self._jsonForm['name'] = newFormName
+
+
 
     def setFieldDescription(self, fieldName, fieldDesciption):
         jsonApplicationField = self._getJsonElementByFieldName(fieldName)
