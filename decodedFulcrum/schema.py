@@ -23,8 +23,13 @@ import re
 from decodedFulcrum.fieldnames import SYSTEM_LEVEL_FIELD_NAMES, CHILD_LEVEL_FIELD_NAMES
 
 class Schema(object):
-    def __init__(self, jsonForm):
-        self._jsonForm = jsonForm
+    def __init__(self, jsonForm=None):
+        if jsonForm:
+            self._jsonForm = jsonForm
+        else:
+            #self._jsonForm = {"form": {"name": "I need a name", "elements": {}}}
+            self._jsonForm = {"name": "I need a name", "elements": []}
+
         #the following dictionaries are populated on demand
         self._applicationFieldsKeyedByFieldName = None
         self._applicationFieldsKeyedByKey = None
@@ -149,7 +154,9 @@ class Schema(object):
                 return jsonApplicationField['label']
 
     def getFieldDescription(self, fieldName):
-        if fieldName not in SYSTEM_LEVEL_FIELD_NAMES and fieldName not in CHILD_LEVEL_FIELD_NAMES:
+        if (    fieldName not in SYSTEM_LEVEL_FIELD_NAMES
+            and fieldName not in CHILD_LEVEL_FIELD_NAMES)\
+            or fieldName == 'status':
             jsonApplicationField = self._getJsonElementByFieldName(fieldName)
 
             if jsonApplicationField:
@@ -428,6 +435,9 @@ class Schema(object):
     def setFormName(self, newFormName):
         self._jsonForm['name'] = newFormName
 
+    def setScript(self, content):
+        self._jsonForm['script'] = content
+
 
 
     def setFieldDescription(self, fieldName, fieldDesciption):
@@ -505,5 +515,69 @@ class Schema(object):
             raise Exception(
                 'Error calling schema.isRequired({}) for app: {} - this field is not defined in this form'.format('status',
                                                                                                                   self.getFormName()))
+        #if the form was established via the api, the status field will exist, but it will have no atributes
+        if 'enabled' in jsonField:
+            return jsonField['enabled']
+        else:
+            return False
 
-        return jsonField['enabled']
+
+    def addTextField(self, fieldName, fieldLabel=None, isRequired=False, isHidden=False, isReadOnly=False, fieldDescription = None):
+        if self.getFieldType(fieldName) is not None:
+            raise Exception("Error calling function schema.addTextField() - a field named {} is already defined in this schema".format(fieldName))
+
+        if ' ' in fieldName:
+            raise Exception("Error calling function cwkFulcrumApplication.addTextField() - the supplied fieldname: {} must not contain spaces".format(fieldName))
+
+        newElement = {}
+        newElement['data_name'] = fieldName
+        if fieldLabel is None:
+            newElement['label'] = fieldName
+        else:
+            newElement['label'] = fieldLabel
+
+        newElement['hidden'] = isHidden
+        newElement['key'] = self.getANewUniqueKey()
+        newElement['type'] = 'TextField'
+        newElement['disabled'] = False
+        newElement['required'] = False
+        newElement['description'] = fieldDescription
+
+        listOfElements = self._jsonForm['elements']
+        listOfElements.append(newElement)
+
+        #force the indexes to recalculate when next used
+        self._applicationFieldsKeyedByFieldName = None
+        self._applicationFieldsKeyedByKey = None
+
+
+    def addRecordLinkField(self, fieldName, referencedFormId, fieldLabel=None, isRequired=False, isHidden=False, isReadOnly=False, fieldDescription=None):
+        if self.getFieldType(fieldName) is not None:
+            raise Exception("Error calling function schema.addTextField() - a field named {} is already defined in this schema".format(fieldName))
+
+        if ' ' in fieldName:
+            raise Exception("Error calling function cwkFulcrumApplication.addTextField() - the supplied fieldname: {} must not contain spaces".format(fieldName))
+
+        self.addTextField(fieldName, fieldLabel, isRequired, isHidden, isReadOnly, fieldDescription)
+        newElement = self._jsonForm['elements'][-1]
+        newElement['type'] = 'RecordLinkField'
+        newElement['allow_creating_records'] = True
+        newElement['allow_existing_records'] = True
+        newElement['allow_multiple_records'] = False
+        newElement['allow_updating_records'] = True
+        newElement['form_id'] = referencedFormId
+
+        # force the indexes to recalculate when next used
+        self._applicationFieldsKeyedByFieldName = None
+        self._applicationFieldsKeyedByKey = None
+
+    def setTitleFields(self, listOfFieldNames):
+        listOfFieldKeys = []
+        for fieldName in listOfFieldNames:
+            fieldKey = self.getFieldKeyByName(fieldName)
+            if fieldKey:
+                listOfFieldKeys.append(fieldKey)
+            else:
+                raise Exception('Error calling setTitleField(). The field named: {} is not defined'.format(fieldName))
+
+        self._jsonForm['title_field_keys'] = listOfFieldKeys
