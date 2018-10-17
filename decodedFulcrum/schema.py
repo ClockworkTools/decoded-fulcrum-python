@@ -371,6 +371,15 @@ class Schema(object):
        classificationSetId = classificationSetField['classification_set_id']
        return classificationSetId
 
+    def isMultiChoiceField(self, choiceFieldName):
+        if self.getFieldType(choiceFieldName) != 'ChoiceField':
+            raise Exception(' function isMultiChoiceField was passed a field that is not a choice field field')
+
+        choiceField = self._getApplicationField(choiceFieldName)
+        if 'multiple' in choiceField:
+            return choiceField['multiple']
+        else:
+            return False
 
     def getAllowMultipleRecordSettingOfRecordLinkField(self, fieldName):
        if self.getFieldType(fieldName) != 'RecordLinkField':
