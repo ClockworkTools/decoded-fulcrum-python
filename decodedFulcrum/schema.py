@@ -1,13 +1,13 @@
 __author__ = 'Keith Hannon'
 __datecreated__ = '8/07/2015'
+__copyright__ = 'Copyright (c)  2015 Keith Hannon, Clockwork'
+__license__ = "AGPL-3.0-only"
 """
-   Copyright 2015 Keith Hannon
-
-   Licensed under the Apache License, Version 2.0 (the "License");
+   Licensed under the GNU AGPL-3.0 License (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+   https://www.gnu.org/licenses/agpl-3.0.en.html
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -111,35 +111,6 @@ class Schema(object):
             else:
                 return False
 
-    def isValidValue(self, fieldName, fieldValue):
-        if fieldValue is None:
-            if self.isRequired(fieldName):
-                return False
-        else:
-            if self.isFieldNumeric(fieldName):
-                if self.isFieldInteger(fieldName):
-                    try:
-                        int(fieldValue)
-                    except:
-                        return False
-                else:
-                    try:
-                        float(fieldValue)
-                    except:
-                        return False
-
-            if self.getFieldType(fieldName) == 'TimeField':
-                if not re.match("^\d\d:\d\d$",fieldValue):
-                    return False
-
-                hours = int(fieldValue[0:1])
-                minutes = int(fieldValue[3:])
-
-                if hours < 0 or hours > 24 or minutes < 0 or minutes > 60:
-                    return False
-
-        return True
-
     def getFieldLabel(self, fieldName):
         if fieldName in SYSTEM_LEVEL_FIELD_NAMES or fieldName in CHILD_LEVEL_FIELD_NAMES:
             return fieldName
@@ -148,30 +119,6 @@ class Schema(object):
 
             if jsonApplicationField:
                 return jsonApplicationField['label']
-
-    def getFieldDescription(self, fieldName):
-        if (    fieldName not in SYSTEM_LEVEL_FIELD_NAMES
-            and fieldName not in CHILD_LEVEL_FIELD_NAMES)\
-            or fieldName == 'status':
-            jsonApplicationField = self._getJsonElementByFieldName(fieldName)
-
-            if jsonApplicationField:
-                return jsonApplicationField['description']
-
-    def getFormVersion(self):
-        """
-        :return: int
-        """
-        return self._jsonForm['version']
-
-    def getTitleFieldNames(self):
-        titleFieldNames = []
-        for titleFieldKey in self._jsonForm['title_field_keys']:
-            fieldName = self.getFieldNameByKey(titleFieldKey)
-            titleFieldNames.append(fieldName)
-
-        return titleFieldNames
-
 
     def getChoiceListIdForField(self, fieldName):
         fieldType = self.getFieldType(fieldName)
@@ -185,29 +132,6 @@ class Schema(object):
 
         if 'choice_list_id' in jsonApplicationField:
             return jsonApplicationField['choice_list_id']
-
-    def getSpecifiedLookupValuesForField (self, fieldName):
-        """
-
-        :param fieldName: string
-        :return: a dictionary of key - value pairs
-        """
-
-        fieldType = self.getFieldType(fieldName)
-        if fieldName != 'status' and fieldType != 'ChoiceField':
-            return None
-
-        jsonApplicationField = self._getJsonElementByFieldName(fieldName)
-        if 'choices' not in  jsonApplicationField:
-            return None
-
-        dictionaryOfSpecifiedLookupValues = collections.OrderedDict()
-        for item in jsonApplicationField['choices']:
-            itemKey = item['value']
-            itemName = item['label']
-            dictionaryOfSpecifiedLookupValues[itemKey] = itemName
-
-        return dictionaryOfSpecifiedLookupValues
 
 
     def _getAllApplicationFields(self):
@@ -380,15 +304,6 @@ class Schema(object):
        recordLinkField = self._getApplicationField(fieldName)
        allowMultipleRecords =  recordLinkField['allow_multiple_records']
        return allowMultipleRecords
-
-    def getDisabledSettingOfRecordLinkField(self, fieldName):
-       if self.getFieldType(fieldName) != 'RecordLinkField':
-            raise Exception('getReadOnlySettingOfRecordLinkField was passed a field that is not a record link field')
-
-       recordLinkField = self._getApplicationField(fieldName)
-       disabledSetting =  recordLinkField['disabled']
-       return disabledSetting
-
 
     def getAutopopulatedFieldSourcesForRecordLinkField(self, recordLinkFieldName, otherSchema):
         #other schema is required in order to retrieve the source field name
