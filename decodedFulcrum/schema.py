@@ -1,6 +1,6 @@
 __author__ = 'Keith Hannon'
 __datecreated__ = '8/07/2015'
-__copyright__ = 'Copyright (c)  2015 Keith Hannon, Clockwork'
+__copyright__ = 'Copyright (c)  2015 Keith Hannon, Clockwork. Email keith@clockwork.co.nz'
 __license__ = "AGPL-3.0-only"
 """
    Licensed under the GNU AGPL-3.0 License (the "License");
@@ -14,8 +14,18 @@ __license__ = "AGPL-3.0-only"
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
 """
 
+"""
+   NOTE REGARDING LIMITING THE SCOPE OF THIS MODULE
+   Clockwork has a policy to not support exposing functionality to modify Fulcrum forms
+   via an open source module that it distributes such as this.
+
+   This is due to security and integrity implications regarding naive use / deployment
+   especially exposing relatively easy opportunities for malicious attacks for systems built with
+   such a module at its core.
+"""
 
 import collections
 import re

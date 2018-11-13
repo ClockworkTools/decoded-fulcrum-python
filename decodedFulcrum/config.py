@@ -1,6 +1,6 @@
 __author__ = 'Keith Hannon'
 __datecreated__ = '4/07/2015'
-__copyright__ = 'Copyright (c)  2015 Keith Hannon, Clockwork'
+__copyright__ = 'Copyright (c)  2015 Keith Hannon, Clockwork. Email keith@clockwork.co.nz'
 __license__ = "AGPL-3.0-only"
 """
    Licensed under the GNU AGPL-3.0 License (the "License");
