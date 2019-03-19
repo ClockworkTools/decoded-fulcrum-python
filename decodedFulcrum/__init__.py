@@ -17,7 +17,7 @@ __license__ = "AGPL-3.0-only"
 """
 
 from fulcrum import Fulcrum
-from fulcrum.api import APIConfig
+from fulcrum.api import Client
 from decodedFulcrum.api.endpoints import DecodedRecords, Schemas
 from fulcrumJsonUtils import getFieldLookups
 from decodedFulcrum.schema import Schema
@@ -28,13 +28,13 @@ class DecodedFulcrum(Fulcrum):
     def __init__(self, key, uri='https://api.fulcrumapp.com'):
         super(DecodedFulcrum, self).__init__(key=key, uri=uri)
 
-        self.api_config = APIConfig(key=key, uri=uri)
+        self.client = Client(key=key, uri=uri)
 
         self.schemas = Schemas(self.forms.search()['forms'])
 
         # ensure that when the "records" part of the fulcrum_api is called, the DecodedRecords functionality is invoked
         # self.records = DecodedRecords(api_config, dictionaryOfSchemas, fieldNameLookups, fieldKeyLookups)
-        self.records = DecodedRecords(self.api_config, self.schemas.search())
+        self.records = DecodedRecords(self.client, self.schemas.search())
 
 
 

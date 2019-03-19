@@ -22,8 +22,8 @@ from decodedFulcrum.schema import Schema
 class DecodedRecords(Records):
     path = 'records'
 
-    def __init__(self, api_config, dictionaryOfSchemas):
-        super(DecodedRecords, self).__init__(api_config)
+    def __init__(self, client, dictionaryOfSchemas):
+        super(DecodedRecords, self).__init__(client)
         self.dictionaryOfSchemas = dictionaryOfSchemas
 
     def find(self, id):
