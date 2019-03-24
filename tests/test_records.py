@@ -30,19 +30,22 @@ class RecordsTest(DecodedFulcrumTestCase):
         print records
 
     def testUpdateRecord(self):
-
         records = self.fulcrum_api.records.search(url_params={'form_id': config.FORM_ID})
-
         fulcrumRecord = records['records'][0]
         id = fulcrumRecord['id']
         fulcrumRecord['form_values']['customer_name'] = 'xyz'
 
+        #Json Records that are returned from Fulcrum as a list of records are not keyed via 'record'
+        #However, this is necessary in order to post updates to Fulcrum
+        jsonRecordToPost = {'record': fulcrumRecord}
+        api_resp = self.fulcrum_api.records.update(id, jsonRecordToPost)
 
-        api_resp = self.fulcrum_api.records.update(id,fulcrumRecord)
+        #the json records returned from an update or retreival of a single record via find are keyed by 'record'
         record = api_resp['record']
 
         new_customer_name = record['form_values']['customer_name']
         self.assertEquals(new_customer_name, 'xyz')
+
 
     def testTime(self):
         start = time.time()

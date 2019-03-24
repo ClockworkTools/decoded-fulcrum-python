@@ -14,5 +14,5 @@ __license__ = "AGPL-3.0-only"
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from fulcrum import APIConfig
+from fulcrum import Client
 

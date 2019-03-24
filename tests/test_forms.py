@@ -1,6 +1,5 @@
 __author__ = 'Keith Hannon'
 __datecreated__ = '8/07/2015'
-
 from tests import DecodedFulcrumTestCase
 from decodedFulcrum import config
 
