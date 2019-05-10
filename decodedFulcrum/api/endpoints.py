@@ -70,7 +70,7 @@ class DecodedRecords(Records):
 
          # now decode the api response
         # probably need to extract the record aspects before this works
-        api_resp= decode(api_resp, self.dictionaryOfSchemas)
+        decode(api_resp, self.dictionaryOfSchemas)
 
         return api_resp
 
