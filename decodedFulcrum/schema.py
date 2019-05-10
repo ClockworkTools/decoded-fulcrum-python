@@ -20,10 +20,8 @@ __license__ = "AGPL-3.0-only"
 """
    NOTE REGARDING LIMITING THE SCOPE OF THIS MODULE
    Clockwork has a policy to not support exposing functionality to modify Fulcrum forms
-   via an open source module that it distributes such as this.
-
-   This is due to security and integrity implications regarding naive use / deployment
-   especially exposing relatively easy opportunities for malicious attacks for systems built with
+   via an open source module that it distributes such as this. This is due to security and integrity implications 
+   especially exposing opportunities for malicious attacks for systems built with
    such a module at its core.
 """
 
