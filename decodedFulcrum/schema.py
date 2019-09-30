@@ -63,7 +63,7 @@ class Schema(object):
         if self._applicationFieldsKeyedByKey == None:
             self._applicationFieldsKeyedByKey = {}
             applicationFieldsKeyedByName = self._getAllApplicationFields()
-            for fieldName, jsonElement in applicationFieldsKeyedByName.items():
+            for fieldName, jsonElement in list(applicationFieldsKeyedByName.items()):
                 key = jsonElement['key']
                 if key is None:
                     pass
@@ -225,10 +225,10 @@ class Schema(object):
         :return list of Strings:
         """
         fieldNamesToReturn = []
-        topLevelApplicationFields = self._new_getApplicationFields(recurseRepeatables=False
+        topLevelApplicationFields = list(self._new_getApplicationFields(recurseRepeatables=False
                                                 ,includeValueFields=True
                                                 ,includeRepeatables=False
-                                                ,includeSectionFields=False).keys()
+                                                ,includeSectionFields=False).keys())
 
         #Return the field names in the sequence defined in the form
         for fieldName in self._getSequencedFieldNames():
@@ -248,11 +248,11 @@ class Schema(object):
 
     def getTopLevelRepeatableFieldNames(self):
         fieldNamesToReturn = []
-        topLevelRepeatableFields = self._new_getApplicationFields(
+        topLevelRepeatableFields = list(self._new_getApplicationFields(
                 recurseRepeatables=False
                 ,includeValueFields=False
                 ,includeRepeatables=True
-                ,includeSectionFields=False).keys()
+                ,includeSectionFields=False).keys())
 
         # Return the field names in the sequence defined in the form
         for fieldName in self._getSequencedFieldNames():
@@ -262,7 +262,7 @@ class Schema(object):
         return fieldNamesToReturn
 
     def _getApplicationField(self, fieldName):
-        if fieldName in self._getAllApplicationFields().keys():
+        if fieldName in list(self._getAllApplicationFields().keys()):
             return self._getAllApplicationFields()[fieldName]
 
     def getApplicationFieldNamesThatAreChildrenOf(self, repeatableOrSectionFieldName):
@@ -272,12 +272,12 @@ class Schema(object):
         jsonElement = self._getJsonElementByFieldName(repeatableOrSectionFieldName)
 
         if jsonElement:
-            return self._new_getApplicationFields(
+            return list(self._new_getApplicationFields(
                       recurseRepeatables=False
                       ,includeValueFields=True
                       ,includeRepeatables=False
                       ,includeSectionFields=False
-                      ,json_structure=jsonElement['elements']).keys()
+                      ,json_structure=jsonElement['elements']).keys())
 
     def getFormIdOfRecordLinkField(self, fieldName):
        if self.getFieldType(fieldName) != 'RecordLinkField':

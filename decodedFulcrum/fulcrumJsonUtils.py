@@ -25,7 +25,7 @@ def getFieldLookups(jsonForms):
         form_id = jsonForm['id']
         applicationFieldNames = getApplicationFieldNames(jsonForm['elements'])
 
-        for key, data_name in  applicationFieldNames.items():
+        for key, data_name in  list(applicationFieldNames.items()):
             lookupKey = (form_id, key)
             fieldNameLookups[lookupKey] = data_name
 
@@ -83,7 +83,7 @@ def _decode(jsonFormValuesField, schema):
 
     # documentation indicates that using dict.items() instead of d.iterItems() means it should
     # be safe to delete or modify items in the dictionary while iterating over it
-    for fieldCode, fieldValue in jsonFormValuesField.items():
+    for fieldCode, fieldValue in list(jsonFormValuesField.items()):
         # add a copy of the field with the fieldName instead of the fieldCode
         fieldName = schema.getFieldNameByKey(fieldCode)
 
@@ -119,7 +119,7 @@ def _recode(jsonFormValuesField, schema):
     #       a dictionary item in a Fulcrum Json Record with the key 'form_values'
 
     # Build up the form fields with the field names replaced by the field codes
-    for fieldName, fieldValue in jsonFormValuesField.items():
+    for fieldName, fieldValue in list(jsonFormValuesField.items()):
         # add a copy of the field with the fieldName instead of the fieldCode
         key = schema.getFieldKeyByName(fieldName)
 

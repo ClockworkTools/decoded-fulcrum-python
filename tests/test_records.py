@@ -23,11 +23,11 @@ import time
 class RecordsTest(DecodedFulcrumTestCase):
 
     def testSettings(self):
-        print config.API_KEY
+        print((config.API_KEY))
 
     def test_records(self):
         records = self.fulcrum_api.records.search(url_params={'form_id': config.FORM_ID})
-        print records
+        print(records)
 
     def testUpdateRecord(self):
         records = self.fulcrum_api.records.search(url_params={'form_id': config.FORM_ID})
@@ -44,7 +44,7 @@ class RecordsTest(DecodedFulcrumTestCase):
         record = api_resp['record']
 
         new_customer_name = record['form_values']['customer_name']
-        self.assertEquals(new_customer_name, 'xyz')
+        self.assertEqual(new_customer_name, 'xyz')
 
 
     def testTime(self):

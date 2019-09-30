@@ -91,7 +91,7 @@ class Schemas(object):
         if formIdOrName in self.dictionaryOfSchemas:
             return self.dictionaryOfSchemas[formIdOrName]
         else:
-            for formId, schema in self.dictionaryOfSchemas.items():
+            for formId, schema in list(self.dictionaryOfSchemas.items()):
                 if schema.getFormName() == formIdOrName:
                     return schema
 

@@ -19,7 +19,7 @@ __license__ = "AGPL-3.0-only"
 from fulcrum import Fulcrum
 from fulcrum.api import Client
 from decodedFulcrum.api.endpoints import DecodedRecords, Schemas
-from fulcrumJsonUtils import getFieldLookups
+from .fulcrumJsonUtils import getFieldLookups
 from decodedFulcrum.schema import Schema
 from decodedFulcrum.fieldnames import SYSTEM_LEVEL_FIELD_NAMES
 
