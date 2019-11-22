@@ -237,6 +237,25 @@ class Schema(object):
 
         return fieldNamesToReturn
 
+    def getTopLevelSectionFieldNames(self):
+        """
+        return the list of field names defined for the form in the sequence definedthat contain data values rather than other fields
+        note that system fields are not returned
+        :return list of Strings:
+        """
+        fieldNamesToReturn = []
+        topLevelSectionFields = list(self._new_getApplicationFields(recurseRepeatables=False
+                                                ,includeValueFields=False
+                                                ,includeRepeatables=False
+                                                ,includeSectionFields=True).keys())
+
+        #Return the field names in the sequence defined in the form
+        for fieldName in self._getSequencedFieldNames():
+            if fieldName in topLevelSectionFields:
+                fieldNamesToReturn.append(fieldName)
+
+        return fieldNamesToReturn
+
     def getTopLevelRecordLinkFieldNames(self):
         fieldNamesToReturn = []
         for fieldName in self.getTopLevelApplicationFieldNames():
