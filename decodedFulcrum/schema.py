@@ -157,12 +157,16 @@ class Schema(object):
                                   , includeRepeatables
                                   , includeSectionFields
                                   , json_structure=None
+                                  , recurseSections=True
                                   ):
         # If no json structure is passed, the top level of the form is assumed
         # If passed, this should be a JSON structure mapping to an 'elements' section of a record in Fulcrum
 
         # A section is classed as an Application Field, as well as all the fields within it, which
         # are at the same level as the sections container
+
+        # When called recurseSections defaults to True, which means that all fields within a section are treated as though they are at the top level
+        # The terms absolute e.g. GetAbsoluteTopLevelSectionFields() implies that only those fields directly at the requested level are returned
         if json_structure == None:
             json_structure = self._jsonForm['elements']
 
@@ -183,10 +187,8 @@ class Schema(object):
                 else:
                     applicationFields[fieldName] = jsonElement
 
-            if jsonElement['type'] == 'Section'\
+            if recurseSections and jsonElement['type'] == 'Section'\
                     or (recurseRepeatables and jsonElement['type'] == 'Repeatable'):
-                # always recurse section fields - the fields belonging to a section are recorded in the fulcrum record
-                # at the same level as the fields in the section's container
                 nestedFields = self._new_getApplicationFields(recurseRepeatables = recurseRepeatables
                                                               , includeValueFields = includeValueFields
                                                               , includeRepeatables = includeRepeatables
@@ -224,18 +226,12 @@ class Schema(object):
         note that system fields are not returned
         :return list of Strings:
         """
-        fieldNamesToReturn = []
-        topLevelApplicationFields = list(self._new_getApplicationFields(recurseRepeatables=False
+        topLevelApplicationFieldNames = list(self._new_getApplicationFields(recurseRepeatables=False
                                                 ,includeValueFields=True
                                                 ,includeRepeatables=False
                                                 ,includeSectionFields=False).keys())
 
-        #Return the field names in the sequence defined in the form
-        for fieldName in self._getSequencedFieldNames():
-            if fieldName in topLevelApplicationFields:
-                fieldNamesToReturn.append(fieldName)
-
-        return fieldNamesToReturn
+        return self._getFieldNamesInCorrectSequence(topLevelApplicationFieldNames)
 
     def getTopLevelSectionFieldNames(self):
         """
@@ -243,42 +239,55 @@ class Schema(object):
         note that system fields are not returned
         :return list of Strings:
         """
-        fieldNamesToReturn = []
-        topLevelSectionFields = list(self._new_getApplicationFields(recurseRepeatables=False
+        topLevelSectionFieldNames = list(self._new_getApplicationFields(recurseRepeatables=False
                                                 ,includeValueFields=False
                                                 ,includeRepeatables=False
                                                 ,includeSectionFields=True).keys())
 
+        return self._getFieldNamesInCorrectSequence(topLevelSectionFieldNames)
+
+    def getAbsoluteTopLevelSectionFieldNames(self):
+        """
+        return the list of field names defined for the form in the sequence definedthat contain data values rather than other fields
+        note that system fields are not returned
+        :return list of Strings:
+        """
+        absoluteTopLevelSectionFieldNames = list(self._new_getApplicationFields(recurseRepeatables=False
+                                                ,includeValueFields=False
+                                                ,includeRepeatables=False
+                                                ,includeSectionFields=True
+                                                ,recurseSections=False).keys()
+                                                )
+
+        return self._getFieldNamesInCorrectSequence(absoluteTopLevelSectionFieldNames)
+
+
+    def _getFieldNamesInCorrectSequence(self, listOfUnorderedFieldNames):
         #Return the field names in the sequence defined in the form
+        fieldNamesToReturn = []
         for fieldName in self._getSequencedFieldNames():
-            if fieldName in topLevelSectionFields:
+            if fieldName in listOfUnorderedFieldNames:
                 fieldNamesToReturn.append(fieldName)
 
         return fieldNamesToReturn
 
     def getTopLevelRecordLinkFieldNames(self):
-        fieldNamesToReturn = []
+        toplLevelRecordLinkFieldNames = []
         for fieldName in self.getTopLevelApplicationFieldNames():
             if self.getFieldType(fieldName) == 'RecordLinkField':
-                fieldNamesToReturn.append(fieldName)
+                toplLevelRecordLinkFieldNames.append(fieldName)
 
-        return fieldNamesToReturn
+        return self._getFieldNamesInCorrectSequence(toplLevelRecordLinkFieldNames)
 
 
     def getTopLevelRepeatableFieldNames(self):
-        fieldNamesToReturn = []
-        topLevelRepeatableFields = list(self._new_getApplicationFields(
+        topLevelRepeatableFieldNames = list(self._new_getApplicationFields(
                 recurseRepeatables=False
                 ,includeValueFields=False
                 ,includeRepeatables=True
                 ,includeSectionFields=False).keys())
 
-        # Return the field names in the sequence defined in the form
-        for fieldName in self._getSequencedFieldNames():
-            if fieldName in topLevelRepeatableFields:
-                fieldNamesToReturn.append(fieldName)
-
-        return fieldNamesToReturn
+        return self._getFieldNamesInCorrectSequence(topLevelRepeatableFieldNames)
 
     def _getApplicationField(self, fieldName):
         if fieldName in list(self._getAllApplicationFields().keys()):
@@ -289,14 +298,15 @@ class Schema(object):
             raise Exception('Error in Schema: a field name that is not a repeatable or section: "{}" was passed to getApplicationFieldNamesThatAreChildrenOf'.format(repeatableOrSectionFieldName))
 
         jsonElement = self._getJsonElementByFieldName(repeatableOrSectionFieldName)
-
         if jsonElement:
-            return list(self._new_getApplicationFields(
+            fieldNames =  list(self._new_getApplicationFields(
                       recurseRepeatables=False
                       ,includeValueFields=True
                       ,includeRepeatables=False
                       ,includeSectionFields=False
                       ,json_structure=jsonElement['elements']).keys())
+
+            return self._getFieldNamesInCorrectSequence(fieldNames)
 
     def getFormIdOfRecordLinkField(self, fieldName):
        if self.getFieldType(fieldName) != 'RecordLinkField':
