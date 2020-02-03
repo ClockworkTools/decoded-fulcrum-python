@@ -98,7 +98,7 @@ def _decode(jsonFormValuesField, schema):
             # process any children of the added field
             fieldType = schema.getFieldType(fieldName)
 
-            if fieldType == 'Repeatable':
+            if fieldType == 'Repeatable' and fieldValue is not None:
                 # fieldValue is a list of child records
                 for childRecord in fieldValue:
                     _decode(childRecord['form_values'], schema)
@@ -134,7 +134,7 @@ def _recode(jsonFormValuesField, schema):
             # process any children of the added field
             fieldType = schema.getFieldType(fieldName)
 
-            if fieldType == 'Repeatable':
+            if fieldType == 'Repeatable' and fieldValue is not None:
                 # fieldValue is a list of child records
                 for childRecord in fieldValue:
                     _recode(childRecord['form_values'], schema)
