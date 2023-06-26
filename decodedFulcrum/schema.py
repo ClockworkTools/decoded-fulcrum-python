@@ -91,13 +91,20 @@ class Schema(object):
             return jsonElement['data_name']
 
     def getFieldType(self, fieldName):
-        if fieldName in SYSTEM_LEVEL_FIELD_NAMES or fieldName in CHILD_LEVEL_FIELD_NAMES:
-            return 'System'
-        else:
-            jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+        # For backward compatability reasons:
 
-            if jsonApplicationField:
-                return jsonApplicationField['type']
+        # If the name of a lowercase system field is requested, but
+        # the requested field is also defined as an app field:
+        #     the field type of the app field will be returned
+        # Otherwise:
+        #      the field type: "System" will be returned
+
+        jsonApplicationField = self._getJsonElementByFieldName(fieldName)
+        if jsonApplicationField:
+            return jsonApplicationField['type']
+        else:
+            if fieldName.lower() in SYSTEM_LEVEL_FIELD_NAMES or fieldName.lower() in CHILD_LEVEL_FIELD_NAMES:
+                return 'System'
 
     def isFieldNumeric(self, fieldName):
         if self.getFieldType(fieldName) != 'TextField':
