@@ -52,12 +52,13 @@ class Schema(object):
             return description
 
     def _getJsonElementByFieldName(self, fieldName):
-        if fieldName == 'status':
-            return self._jsonForm['status_field']
+        applicationFields = self._getAllApplicationFields()
+        if fieldName in applicationFields:
+            return applicationFields[fieldName]
         else:
-            applicationFields = self._getAllApplicationFields()
-            if fieldName in applicationFields:
-                return applicationFields[fieldName]
+            if fieldName.lower() == 'status':
+                return self._jsonForm['status_field']
+            # Otherwize None is returned
 
     def _getJsonElementByFieldKey(self, searchKey):
         if self._applicationFieldsKeyedByKey == None:
@@ -424,7 +425,7 @@ class Schema(object):
         return jsonField['disabled']
 
     def isStatusEnabled(self):
-        jsonField = self._getJsonElementByFieldName('status')
+        jsonField = self._getJsonElementByFieldName('STATUS')
         if jsonField is None:
             raise Exception(
                 'Error calling schema.isRequired({}) for app: {} - this field is not defined in this form'.format('status',
