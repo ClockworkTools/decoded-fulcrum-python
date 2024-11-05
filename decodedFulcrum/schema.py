@@ -318,7 +318,7 @@ class Schema(object):
 
     def getRepeatableFieldNamesThatAreChildrenOf(self, repeatableOrSectionFieldName):
         if self.getFieldType(repeatableOrSectionFieldName) not in ('Repeatable', 'Section'):
-            raise Exception('Error in Schema: a field name that is not a repeatable or section: "{}" was passed to getApplicationFieldNamesThatAreChildrenOf'.format(repeatableOrSectionFieldName))
+            raise Exception('Error in Schema: a field name that is not a repeatable or section: "{}" was passed to getRepeatableFieldNamesThatAreChildrenOf'.format(repeatableOrSectionFieldName))
 
         jsonElement = self._getJsonElementByFieldName(repeatableOrSectionFieldName)
         if jsonElement:
