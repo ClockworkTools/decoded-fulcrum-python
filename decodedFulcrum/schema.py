@@ -316,6 +316,22 @@ class Schema(object):
 
             return self._getFieldNamesInCorrectSequence(fieldNames)
 
+    def getRepeatableFieldNamesThatAreChildrenOf(self, repeatableOrSectionFieldName):
+        if self.getFieldType(repeatableOrSectionFieldName) not in ('Repeatable', 'Section'):
+            raise Exception('Error in Schema: a field name that is not a repeatable or section: "{}" was passed to getApplicationFieldNamesThatAreChildrenOf'.format(repeatableOrSectionFieldName))
+
+        jsonElement = self._getJsonElementByFieldName(repeatableOrSectionFieldName)
+        if jsonElement:
+            fieldNames =  list(self._new_getApplicationFields(
+                      recurseRepeatables=False
+                      ,includeValueFields=False
+                      ,includeRepeatables=True
+                      ,includeSectionFields=False
+                      ,json_structure=jsonElement['elements']).keys())
+
+            return self._getFieldNamesInCorrectSequence(fieldNames)
+
+
     def getFormIdOfRecordLinkField(self, fieldName):
        if self.getFieldType(fieldName) != 'RecordLinkField':
             raise Exception('getFormIdOfRecordLinkField was passed a field that is not a record link field')

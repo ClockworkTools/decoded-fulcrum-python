@@ -10,7 +10,7 @@ requires = ['fulcrum']
 
 setup(
     name='decodedfulcrum',
-    version='1.1.3',
+    version='1.1.4',
     description='A python wrapper for the Fulcrum API',
     author='Keith Hannon',
     author_email='keith@clockwork.co.nz',
